@@ -152,9 +152,25 @@ const getLoggedInUserData = async (req, res) => {
     }
 }
 
+const logoutUser = async (req, res) => {
+    try {
+       return res.status(200)
+       .clearCookie('accessToken',options)
+       .json({
+        message: 'User loggedOut successfully'
+       })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while logging out user'
+        })
+    }
+}
+
 
 export {
     registerUser,
     loginUser,
-    getLoggedInUserData
+    getLoggedInUserData,
+    logoutUser
 }
