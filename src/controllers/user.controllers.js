@@ -2,6 +2,24 @@ import { User } from "../models/User.models.js";
 import { uploadOnCloudinary } from '../services/cloudinary.js'
 
 
+const methodToGenerateAccessToken = async (userId) => {
+    try {
+        const user = await User.findById(userId)
+        const accessToken = await user.generateAccessToken();
+        return accessToken;
+    } catch (error) {
+        console.log('Error while generating Access Token');
+    }
+}
+
+const options = {
+    httpOnly: true,
+    secure: false
+}
+
+
+// User controllers
+
 const registerUser = async (req, res) => {
     try {
 
@@ -62,7 +80,57 @@ const registerUser = async (req, res) => {
     }
 }
 
+const loginUser = async (req, res) => {
+    try {
+        
+        const { email, password } = req.body;
+
+        if(!email || !password) {
+            return res.status(400).json({
+                message: 'All fields are required'
+            })
+        }
+
+        const user = await User.findOne({
+            email
+        })
+
+        if(!user) {
+            return res.status(404).json({
+                message: 'User with this email does not exists'
+            })
+        }
+
+        const isPasswordCorrect = await user.isPasswordCorrect(password)
+
+        if(!isPasswordCorrect) {
+            return res.status(401).json({
+                message: 'Incorrect password'
+            })
+        }
+
+        const accessToken = await methodToGenerateAccessToken(user._id);
+
+        const loggedInUser = await User.findById(user._id).select('-password')
+
+
+        return res.status(200)
+        .cookie('accessToken',accessToken,options)
+        .json({
+            message: 'User LoggedIn successfully',
+            data: loggedInUser,
+            accessToken
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while logging in User'
+        })
+    }
+}
 
 export {
     registerUser,
+    loginUser,
 }

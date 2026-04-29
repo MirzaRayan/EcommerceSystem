@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controllers.js";
+import { loginUser, registerUser } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Limiter } from "../middlewares/rateLimmiter.middleware.js";
 
@@ -12,6 +12,8 @@ router.route('/register').post(upload.fields([
         maxCount: 1
     }
 ]),registerUser)
+
+router.route('/login').post(Limiter, loginUser)
 
 
 
