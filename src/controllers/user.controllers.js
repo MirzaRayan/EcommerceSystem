@@ -239,6 +239,50 @@ const changePassword = async (req, res) => {
     }
 }
 
+const updateAvatar = async (req, res) => {
+    try {
+        if(!req.file) {
+            return res.status(400).json({
+                message: 'upload an image'
+            })
+        }
+
+        const avatarLocalPath = req.file.path
+
+        const avatar = await uploadOnCloudinary(avatarLocalPath)
+
+        if(!avatar) {
+            return res.status(400).json({
+                message: 'Errr while uploading avatar'
+            })
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { avatar: avatar.url },
+            { new: true }
+        ).select('-password')
+
+        if(!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+
+
+        return res.status(200).json({
+            message: 'image updated successfully',
+            data: user
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while updating image'
+        })
+    }
+}
+
 
 
 
@@ -249,5 +293,6 @@ export {
   getLoggedInUserData,
   logoutUser,
   updateProfile,
-  changePassword
+  changePassword,
+  updateAvatar
 };

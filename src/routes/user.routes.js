@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePassword, getLoggedInUserData, loginUser, logoutUser, registerUser, updateProfile } from "../controllers/user.controllers.js";
+import { changePassword, getLoggedInUserData, loginUser, logoutUser, registerUser, updateAvatar, updateProfile } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Limiter } from "../middlewares/rateLimmiter.middleware.js";
 import { verifyJWT } from "../middlewares/Auth.middleware.js";
@@ -22,5 +22,8 @@ router.route('/me').get(verifyJWT, getLoggedInUserData)
 router.route('/logout').get(verifyJWT, logoutUser)
 router.route('/update').put(verifyJWT, updateProfile)
 router.route('/change-password').put(verifyJWT, changePassword)
+router.route('/update-avatar').put(verifyJWT,upload.single('avatar'), updateAvatar)
+
+
 
 export default router
