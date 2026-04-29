@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { loginUser, registerUser } from "../controllers/user.controllers.js";
+import { getLoggedInUserData, loginUser, registerUser } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Limiter } from "../middlewares/rateLimmiter.middleware.js";
+import { verifyJWT } from "../middlewares/Auth.middleware.js";
 
 const router = Router()
 
@@ -15,7 +16,8 @@ router.route('/register').post(upload.fields([
 
 router.route('/login').post(Limiter, loginUser)
 
+// protected Routes
 
-
+router.route('/me').get(verifyJWT, getLoggedInUserData)
 
 export default router

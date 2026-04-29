@@ -7,7 +7,7 @@ export const verifyJWT = async (req, res, next) => {
 
         if(!token) {
             return res.status(401).json({
-                message: 'Invalid token'
+                message: 'UnAuthorized req'
             })
         }
 
@@ -21,12 +21,12 @@ export const verifyJWT = async (req, res, next) => {
 
         if(!user) {
             return res.status(401).json({
-                message: 'user not found or UnAuthorized req'
+                message: 'Invalid Token'
             })
         }
 
         req.user = user
-        next()
+        next();
 
 
     } catch (error) {
@@ -38,6 +38,4 @@ export const verifyJWT = async (req, res, next) => {
 }
 
 
-export {
-    verifyJWT
-}
+export default verifyJWT
