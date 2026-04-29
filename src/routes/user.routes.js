@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getLoggedInUserData, loginUser, logoutUser, registerUser } from "../controllers/user.controllers.js";
+import { getLoggedInUserData, loginUser, logoutUser, registerUser, updateProfile } from "../controllers/user.controllers.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Limiter } from "../middlewares/rateLimmiter.middleware.js";
 import { verifyJWT } from "../middlewares/Auth.middleware.js";
@@ -20,5 +20,6 @@ router.route('/login').post(Limiter, loginUser)
 
 router.route('/me').get(verifyJWT, getLoggedInUserData)
 router.route('/logout').get(verifyJWT, logoutUser)
+router.route('/update').put(verifyJWT, updateProfile)
 
 export default router
