@@ -1,5 +1,6 @@
 import { User } from "../models/User.models.js";
 import { uploadOnCloudinary } from "../services/cloudinary.js";
+import bcrypt from 'bcrypt'
 
 const methodToGenerateAccessToken = async (userId) => {
   try {
@@ -184,10 +185,69 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+
+        if(!oldPassword || !newPassword ) {
+            return res.status(400).json({
+                message: 'All fields are required'
+            })
+        }
+
+        if(oldPassword === newPassword) {
+            return res.status(400).json({
+                message: 'newPassword should be different than the old one'
+            })
+        }
+
+        if(newPassword.length < 6) {
+            return res.status(400).json({
+                message: 'Min 6 character'
+            })
+        }
+
+        const user = await User.findById(req.user._id)
+
+        if(!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+
+        const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+        if(!isPasswordCorrect) {
+            return res.status(401).json({
+                message: 'In correct password'
+            })
+        }
+
+        user.password = newPassword
+
+        await user.save();
+
+        return res.status(200).json({
+            message: 'password change successfully'
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server error while changing password'
+        })
+    }
+}
+
+
+
+
+
 export {
   registerUser,
   loginUser,
   getLoggedInUserData,
   logoutUser,
   updateProfile,
+  changePassword
 };
