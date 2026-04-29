@@ -2,6 +2,11 @@ import dotenv from 'dotenv'
 dotenv.config({
     path: './.env'
 })
+
+import { connectCloudinary } from './src/services/cloudinary.js'
+connectCloudinary();
+
+
 import app from "./app.js";
 import { DB_Connection } from "./src/db/index.js";
 

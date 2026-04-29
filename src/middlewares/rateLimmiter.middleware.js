@@ -1,0 +1,16 @@
+import rateLimit from "express-rate-limit";
+
+const Limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,                    // 5 attempts allowed
+  message: {
+    success: false,
+    message: "Too many login attempts. Please try again after 15 minutes."
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export {
+    Limiter
+}

@@ -14,6 +14,10 @@ app.use(express.urlencoded({
 
 
 
+import UserRouter from './src/routes/user.routes.js' 
+
+app.use('/api/user',UserRouter)
+
 
 
 export default app
