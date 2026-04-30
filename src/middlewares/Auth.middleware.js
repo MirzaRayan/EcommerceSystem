@@ -36,6 +36,3 @@ export const verifyJWT = async (req, res, next) => {
         })
     }
 }
-
-
-export default verifyJWT

@@ -21,4 +21,10 @@ app.use('/api/user',UserRouter)
 
 
 
+import CategoryRouter from  './src/routes/category.routes.js';
+
+app.use('/api/category',CategoryRouter)
+
+
+
 export default app
