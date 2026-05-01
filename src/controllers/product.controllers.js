@@ -1,6 +1,7 @@
 import { Product } from "../models/Product.models.js";
 import { uploadOnCloudinary } from "../services/cloudinary.js";
 import { Category } from "../models/Category.models.js";
+import getPagination from "../services/pagination.js";
 
 
 const createProduct = async (req, res) => {
@@ -73,8 +74,46 @@ const createProduct = async (req, res) => {
     }
 }
 
+const getAllProducts = async (req, res) => {
+    try {
+
+        const { page, limit, skip } = getPagination(req.query)
+
+        const allProducts = await Product.find()
+            .populate('categoryId', 'name')
+            .skip(skip)  
+            .limit(limit) 
+
+        if(allProducts.length === 0) {
+            return res.status(404).json({
+                message: 'No product found'
+            })
+        }
+
+        const totalProducts = await Product.countDocuments()
+
+        return res.status(200).json({
+            message: 'All products fetched successfully',
+            data: allProducts,
+            pagination: {
+                totalProducts,
+                currentPage: page,
+                totalPages: Math.ceil(totalProducts / limit),
+                limit
+            }
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while getting all products'
+        })
+    }
+}
+
 
 
 export {
-    createProduct
+    createProduct,
+    getAllProducts
 }
