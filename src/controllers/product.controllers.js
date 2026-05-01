@@ -135,10 +135,39 @@ const getSingleProduct = async (req, res) => {
     }
 }
 
+const deleteProduct = async (req, res) => {
+    try {
+
+        const product = await Product.findById(req.params.id).populate(
+            'categoryId',
+            'name'
+          );
+      
+          if (!product) {
+            return res.status(404).json({
+              message: "Product not found",
+            });
+          }
+      
+          await product.deleteOne();
+
+        return res.status(200).json({
+            message: 'Product deleted successfully',
+            data: product
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while deleting product'
+        })
+    }
+}
+
 
 
 export {
     createProduct,
     getAllProducts,
     getSingleProduct,
+    deleteProduct
 }
