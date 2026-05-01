@@ -2,6 +2,7 @@ import { Product } from "../models/Product.models.js";
 import { uploadOnCloudinary } from "../services/cloudinary.js";
 import { Category } from "../models/Category.models.js";
 import getPagination from "../services/pagination.js";
+import { updateProfile } from "./user.controllers.js";
 
 
 const createProduct = async (req, res) => {
@@ -111,9 +112,33 @@ const getAllProducts = async (req, res) => {
     }
 }
 
+const getSingleProduct = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).populate('categoryId','name')
+
+        if(!product) {
+            return res.status(404).json({
+                message: 'Product Not found'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'single product fetched successfully',
+            data: product
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server error while getting single product'
+        })
+    }
+}
+
 
 
 export {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    getSingleProduct,
 }
