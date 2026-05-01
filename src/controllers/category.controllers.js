@@ -138,9 +138,32 @@ const deleteCategory = async (req, res) => {
     }
 }
 
+const getAllCategories = async (req, res) => {
+    try {
+        const allCategories = await Category.find();
+
+        if(allCategories.length === 0) {
+            return res.status(404).json({
+                message: 'Categories not found'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'Categories data fetched successfully',
+            data: allCategories
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while getting all categories'
+        })
+    }
+}
+
 
 export {
     createCategory,
     updateCategory,
-    deleteCategory
+    deleteCategory,
+    getAllCategories
 }

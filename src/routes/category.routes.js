@@ -1,9 +1,13 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/Auth.middleware.js";
 import { isAdmin }  from '../middlewares/Admin.middleware.js'
-import { createCategory, deleteCategory, updateCategory } from "../controllers/category.controllers.js";
+import { createCategory, deleteCategory, getAllCategories, updateCategory } from "../controllers/category.controllers.js";
 
 const router = Router();
+
+
+// public routes
+router.route('/allCategories').get(getAllCategories)
 
 
 // protected routes
