@@ -2,7 +2,6 @@ import { Product } from "../models/Product.models.js";
 import { uploadOnCloudinary } from "../services/cloudinary.js";
 import { Category } from "../models/Category.models.js";
 import getPagination from "../services/pagination.js";
-import { updateProfile } from "./user.controllers.js";
 
 
 const createProduct = async (req, res) => {
@@ -213,6 +212,49 @@ const updateProduct = async (req, res) => {
     }
 }
 
+const updateProductImage = async (req, res) => {
+    try {
+        if(!req.file) {
+            return res.status(400).json({
+                message: 'Image is required'
+            })
+        }
+
+        const imageLocalPath = req.file.path
+
+        if(!imageLocalPath) {
+            return res.status(400).json({
+                message: 'image path is required'
+            })
+        }
+
+
+        const image = await uploadOnCloudinary(imageLocalPath)
+
+        const updatedImage = await Product.findByIdAndUpdate(
+            req.params.id,
+            { image: image.url },
+            { new: true }
+        )
+
+        if(!updatedImage) {
+            return res.status(404).json({
+                message: 'Product not found'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'Image updated successfully',
+            data: updatedImage 
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while updating procduct image'
+        })
+    }
+}
 
 
 export {
@@ -220,5 +262,6 @@ export {
     getAllProducts,
     getSingleProduct,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    updateProductImage
 }
