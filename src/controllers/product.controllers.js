@@ -163,11 +163,62 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+const updateProduct = async (req, res) => {
+    try {
+        const key = Object.keys(req.body)
+
+        const allowedFields = ['name','description','price','stock']
+
+        const isValid = key.every((fields) => allowedFields.includes(fields))
+
+        if(!isValid) {
+            return res.status(400).json({
+                message: 'You cannot change this field'
+            })
+        }
+
+        if(req.body.price && req.body.price < 0) {
+            return res.status(400).json({
+                message: 'Price cannot be negative'
+            })
+        }
+        
+        if(req.body.stock && req.body.stock < 0) {
+            return res.status(400).json({
+                message: 'Stock cannot be negative'
+            })
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new:true }
+        ).populate('categoryId','name')
+
+        if(!updatedProduct) {
+            return res.status(404).json({
+                message: 'product not found'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'Product updated successfully',
+            data: updatedProduct
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server error while updating product'
+        })
+    }
+}
+
 
 
 export {
     createProduct,
     getAllProducts,
     getSingleProduct,
-    deleteProduct
+    deleteProduct,
+    updateProduct
 }
