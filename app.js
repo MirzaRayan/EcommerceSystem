@@ -33,4 +33,10 @@ app.use('/api/product', ProductRouter)
 
 
 
+import CartRouter from './src/routes/cart.routes.js';
+
+app.use('/api/cart', CartRouter)
+
+
+
 export default app
