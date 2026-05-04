@@ -94,7 +94,33 @@ const getCart = async (req, res) => {
     }
 }
 
+const clearCart = async (req, res) => {
+    try {
+
+        const deletedCart = await Cart.deleteMany({ 
+            userId: req.user._id 
+        })
+
+        if(deletedCart.deletedCount === 0) {
+            return res.status(404).json({
+                message: 'Cart is already empty'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'Cart cleared successfully',
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while clearing cart'
+        })
+    }
+}
+
 export { 
     addToCart,
-    getCart
+    getCart,
+    clearCart
 };
