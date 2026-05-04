@@ -71,8 +71,30 @@ const addToCart = async (req, res) => {
     }
 }
 
+const getCart = async (req, res) => {
+    try {
+        const cart = await Cart.find({ userId: req.user._id }).populate('productId', 'name price image')
 
+        if(cart.length === 0) {
+            return res.status(404).json({
+                message: 'Cart it empty || No cart found'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'Cart fetched sucessfully',
+            data: cart
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while getting cart'
+        })
+    }
+}
 
 export { 
-    addToCart 
+    addToCart,
+    getCart
 };
