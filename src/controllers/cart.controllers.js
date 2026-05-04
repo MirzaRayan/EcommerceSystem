@@ -152,4 +152,56 @@ const removeFromCart = async (req, res) => {
     }
 }
 
-export { addToCart, getCart, clearCart, removeFromCart };
+const updateQuantity = async (req, res) => {
+    try {
+
+        const key = Object.keys(req.body)
+        const allowedFields = ['quantity']
+        const isValid = key.every((fields) => allowedFields.includes(fields))
+
+        if(!isValid) {
+            return res.status(400).json({ 
+                message: 'You cannot change this field'
+            })
+        }
+
+        if(req.body.quantity <= 0) {
+            return res.status(400).json({
+                message: 'Quantity must be greater than 0'
+            })
+        }
+
+        const cartItem = await Cart.findById(req.params.id)
+
+        if(!cartItem) {
+            return res.status(404).json({
+                message: 'Cart item not found'
+            })
+        }
+
+        if(cartItem.userId.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                message: 'You are not allowed to update this item'
+            })
+        }
+
+        const updatedQuatity = await Cart.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        )
+
+        return res.status(200).json({
+            message: 'Quantity updated successfully',
+            data: updatedQuatity 
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while updating quantity'
+        })
+    }
+}
+
+export { addToCart, getCart, clearCart, removeFromCart, updateQuantity };
