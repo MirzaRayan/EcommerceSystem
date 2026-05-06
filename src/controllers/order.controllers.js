@@ -65,9 +65,38 @@ const placeOrder = async (req, res) => {
     }
 }
 
+const getMyOrders = async (req, res) => {
+    try {
+
+        const orders = await Order.find({ 
+            userId: req.user._id 
+        })
+
+        if(orders.length === 0) {
+            return res.status(404).json({
+                message: 'No orders found'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'Orders fetched successfully',
+            data: orders
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while getting orders'
+        })
+    }
+}
+
+
+
 
 
 export {
     placeOrder,
-    
+    getMyOrders,
+
 }
