@@ -2,6 +2,7 @@ import { Order } from "../models/Order.models.js";
 import { OrderItems } from "../models/OrderItems.models.js";
 import { Cart } from "../models/Cart.models.js";
 import { Product } from "../models/Product.models.js";
+import getPagination from "../services/pagination.js";
 
 
 const placeOrder = async (req, res) => {
@@ -128,10 +129,93 @@ const getSingleOrder = async (req, res) => {
     }
 }
 
+const updateOrderStatus = async (req, res) => {
+    try {
+
+        const { status } = req.body
+
+        const allowedStatus = [
+            'pending', 
+            'processing', 
+            'delivered', 
+            'cancelled'
+        ]
+
+        if(!allowedStatus.includes(status)) {
+            return res.status(400).json({
+                message: 'Invalid status value'
+            })
+        }
+
+        const updatedOrder = await Order.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        )
+
+        if(!updatedOrder) {
+            return res.status(404).json({
+                message: 'Order not found'
+            })
+        }
+
+        return res.status(200).json({
+            message: 'Order status updated successfully',
+            data: updatedOrder
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while updating order status'
+        })
+    }
+}
+
+const getAllOrders = async (req, res) => {
+    try {
+
+        // Pagination
+        const { page, limit, skip } = getPagination(req.query)
+
+        const orders = await Order.find()
+            .populate('userId', 'name email')
+            .skip(skip)
+            .limit(limit)
+
+        if(orders.length === 0) {
+            return res.status(404).json({
+                message: 'No orders found'
+            })
+        }
+
+        const totalOrders = await Order.countDocuments()
+
+        return res.status(200).json({
+            message: 'All orders fetched successfully',
+            data: orders,
+            pagination: {
+                totalOrders,
+                currentPage: page,
+                totalPages: Math.ceil(totalOrders / limit),
+                limit
+            }
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Server Error while getting all orders'
+        })
+    }
+}
+
 
 
 export {
     placeOrder,
     getMyOrders,
-    getSingleOrder
+    getSingleOrder,
+    updateOrderStatus,
+    getAllOrders
 }
