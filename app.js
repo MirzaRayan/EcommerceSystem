@@ -39,4 +39,10 @@ app.use('/api/cart', CartRouter)
 
 
 
+import OrderRouter from './src/routes/order.routes.js'
+
+app.use('/api/order', OrderRouter)
+
+
+
 export default app
